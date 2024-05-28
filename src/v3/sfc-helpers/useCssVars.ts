@@ -1,4 +1,4 @@
-import { watchPostEffect } from '../'
+import { watchPostEffect } from '..'
 import { inBrowser, warn } from 'core/util'
 import { currentInstance } from '../currentInstance'
 
