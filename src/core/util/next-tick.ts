@@ -7,7 +7,7 @@ import { isIE, isIOS, isNative } from './env' // 环境检测相关函数
 export let isUsingMicroTask = false  // 标记是否使用微任务
 
 const callbacks: Array<Function> = []  //  存储所有待执行的回调函数  
-let pending = false // 标记是否有待处理的回调
+let pending = false // 标记是否有待处理的回调 如果已经有timerFunc被推送到任务队列中去则不需要重复推送
 
 // 函数负责执行所有存储在 callbacks 数组中的回调函数，并清空数组----
 function flushCallbacks() {
@@ -28,6 +28,7 @@ function flushCallbacks() {
  */
 
 // 一个函数变量，用于保存不同环境下异步任务的具体实现
+// 一个函数指针，指向函数将被推送到任务队列中，等到主线程任务执行完时，任务队列中的timerFunc被调用
 let timerFunc
 
 // 检查 Promise 是否可用且是原生实现 微任务

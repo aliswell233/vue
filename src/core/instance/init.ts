@@ -38,14 +38,15 @@ export function initMixin(Vue: typeof Component) {
     // render of a parent component
     vm._scope.parent = undefined
     vm._scope._vm = true
-    // merge options
+
+    // _isComponent 属性通常用于标识这是一个内部组件实例。内部组件实例的初始化过程可以进行一些优化。
     if (options && options._isComponent) {
-      // optimize internal component instantiation
-      // since dynamic options merging is pretty slow, and none of the
-      // internal component options needs special treatment.
+      // 函数负责初始化内部组件实例，避免了一些不必要的动态选项合并，从而提高性能。内部组件的选项通常已经预处理，不需要像外部传入的选项那样进行复杂的合并操作
       initInternalComponent(vm, options as any)
     } else {
+      // mergeOptions 函数负责合并不同来源的选项，包括全局选项、构造函数选项和实例选项，以生成最终的配置对象
       vm.$options = mergeOptions(
+        // resolveConstructorOptions 函数用于解析构造函数的默认选项，这些选项通常是通过 Vue.extend 创建的
         resolveConstructorOptions(vm.constructor as any),
         options || {},
         vm

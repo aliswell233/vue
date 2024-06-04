@@ -126,21 +126,26 @@ export function observe(
  * Define a reactive property on an Object.
  */
 export function defineReactive(
-  obj: object,
-  key: string,
-  val?: any,
-  customSetter?: Function | null,
-  shallow?: boolean,
-  mock?: boolean,
+  obj: object, // 要定义响应式属性的对象
+  key: string, // 属性的键名
+  val?: any, // 属性的初始值
+  customSetter?: Function | null, // 自定义的setter函数
+  shallow?: boolean, // 是否浅响应，即只对第一层属性进行响应式处理
+  mock?: boolean, // 是否为mock对象（一般用于测试）
   observeEvenIfShallow = false
 ) {
-  const dep = new Dep()
+  const dep = new Dep()  // 创建一个依赖实例，用于跟踪依赖
 
+  // Object.getOwnPropertyDescriptor 是为了获取对象属性的描述符
   const property = Object.getOwnPropertyDescriptor(obj, key)
+  // 如果属性不可配置 (configurable: false)，则直接返回，不对该属性进行响应式处理。
   if (property && property.configurable === false) {
     return
   }
 
+  // 没有预定义 getter 或有 setter，且没有提供初始值，则获取当前对象属性值作为初始值
+  // 有显示的初始值(val有值)直接作为属性的初始值， 这里为val没值的服务
+  // 赋初始值的目的是 为了响应setter里的监听到值发生了变化
   // cater for pre-defined getter/setters
   const getter = property && property.get
   const setter = property && property.set
@@ -150,12 +155,14 @@ export function defineReactive(
   ) {
     val = obj[key]
   }
-
+  // 如果 shallow 为真，则只检查 val 是否已经是一个被观察的对象（即是否有 __ob__ 属性），并将 childOb 设置为 val.__ob__。
+  // 如果 shallow 为假，则递归地观察 val 及其子属性，并将 childOb 设置为新创建的观察者对象
   let childOb = shallow ? val && val.__ob__ : observe(val, false, mock)
   Object.defineProperty(obj, key, {
     enumerable: true,
     configurable: true,
     get: function reactiveGetter() {
+      // 确保在属性的 getter 存在时，通过 getter 获取属性值；如果 getter 不存在，则直接使用初始值
       const value = getter ? getter.call(obj) : val
       if (Dep.target) {
         if (__DEV__) {

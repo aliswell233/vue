@@ -29,6 +29,7 @@ export interface DepTarget extends DebuggerOptions {
  * @internal
  */
 export default class Dep {
+  // target 是一个静态属性（静态属性是指属于类本身而不是类的实例的属性）
   static target?: DepTarget | null
   id: number
   subs: Array<DepTarget | null>
