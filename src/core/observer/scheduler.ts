@@ -10,6 +10,7 @@ export const MAX_UPDATE_COUNT = 100
 
 const queue: Array<Watcher> = []
 const activatedChildren: Array<Component> = []
+// [key: number] 表示这个对象的键是数字类型  true | undefined | null 表示对象 has 中每个键的值可以是 true、undefined 或 null 之一。
 let has: { [key: number]: true | undefined | null } = {}
 let circular: { [key: number]: number } = {}
 let waiting = false
@@ -76,7 +77,7 @@ function flushSchedulerQueue() {
   flushing = true
   let watcher, id
 
-  // Sort queue before flush.
+  // Sort queue before flush. 队列做了从小到大的排序
   // This ensures that:
   // 1. Components are updated from parent to child. (because parent is always
   //    created before the child)
@@ -84,6 +85,13 @@ function flushSchedulerQueue() {
   //    user watchers are created before the render watcher)
   // 3. If a component is destroyed during a parent component's watcher run,
   //    its watchers can be skipped.
+
+  /**
+   * 队列做了从小到大的排序
+   * 1.组件的更新由父到子；因为父组件的创建过程是先于子的，所以 watcher 的创建也是先父后子，执行顺序也应该保持先父后子。
+   * 2.用户的自定义 watcher 要优先于渲染 watcher 执行；因为用户自定义 watcher 是在渲染 watcher 之前创建的。
+   * 3.如果一个组件在父组件的 watcher 执行期间被销毁，那么它对应的 watcher 执行都可以被跳过，所以父组件的 watcher 应该先执行
+   */
   queue.sort(sortCompareFn)
 
   // do not cache length because more watchers might be pushed

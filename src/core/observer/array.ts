@@ -9,6 +9,7 @@ import { def } from '../util/index'
 const arrayProto = Array.prototype
 export const arrayMethods = Object.create(arrayProto)
 
+// 数组中所有能改变数组自身的方法
 const methodsToPatch = [
   'push',
   'pop',
@@ -26,6 +27,7 @@ methodsToPatch.forEach(function (method) {
   // cache original method
   const original = arrayProto[method]
   def(arrayMethods, method, function mutator(...args) {
+    // 重写
     const result = original.apply(this, args)
     const ob = this.__ob__
     let inserted
@@ -38,6 +40,7 @@ methodsToPatch.forEach(function (method) {
         inserted = args.slice(2)
         break
     }
+    // 获取到插入的值，然后把新添加的值变成一个响应式对象
     if (inserted) ob.observeArray(inserted)
     // notify change
     if (__DEV__) {
@@ -47,6 +50,7 @@ methodsToPatch.forEach(function (method) {
         key: method
       })
     } else {
+      // ob.dep.notify() 手动触发依赖通知
       ob.dep.notify()
     }
     return result

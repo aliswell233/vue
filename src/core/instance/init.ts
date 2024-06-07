@@ -68,6 +68,8 @@ export function initMixin(Vue: typeof Component) {
     initState(vm)
     initProvide(vm) // resolve provide after data/props
     callHook(vm, 'created')
+    console.log('initState', vm);
+    
 
     /* istanbul ignore if */
     if (__DEV__ && config.performance && mark) {

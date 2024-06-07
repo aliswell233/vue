@@ -210,6 +210,7 @@ export function getData(data: Function, vm: Component): any {
 const computedWatcherOptions = { lazy: true }
 
 function initComputed(vm: Component, computed: Object) {
+  // 创建 vm._computedWatchers 为一个空对象
   // $flow-disable-line
   const watchers = (vm._computedWatchers = Object.create(null))
   // computed properties are just getters during SSR
@@ -217,13 +218,15 @@ function initComputed(vm: Component, computed: Object) {
 
   for (const key in computed) {
     const userDef = computed[key]
+    // 尝试获取这个 userDef 对应的 getter 函数，拿不到则在开发环境下报警告。
     const getter = isFunction(userDef) ? userDef : userDef.get
     if (__DEV__ && getter == null) {
       warn(`Getter is missing for computed property "${key}".`, vm)
     }
 
+    // 为每一个 getter 创建一个 watcher
+    // 这个 watcher 和渲染 watcher 有一点很大的不同，它是一个 computed watcher
     if (!isSSR) {
-      // create internal watcher for the computed property.
       watchers[key] = new Watcher(
         vm,
         getter || noop,
@@ -235,6 +238,7 @@ function initComputed(vm: Component, computed: Object) {
     // component-defined computed properties are already defined on the
     // component prototype. We only need to define computed properties defined
     // at instantiation here.
+    // 如果 key 不是 vm 的属性，则调用 defineComputed(vm, key, userDef)
     if (!(key in vm)) {
       defineComputed(vm, key, userDef)
     } else if (__DEV__) {
@@ -252,6 +256,7 @@ function initComputed(vm: Component, computed: Object) {
   }
 }
 
+// 定义计算属性（computed properties）。计算属性是基于其他数据属性计算出来的属性，并且它们的值会被缓存，直到相关的依赖属性发生变化时才会重新计算
 export function defineComputed(
   target: any,
   key: string,
@@ -282,6 +287,7 @@ export function defineComputed(
   Object.defineProperty(target, key, sharedPropertyDefinition)
 }
 
+// 利用 Object.defineProperty 给计算属性对应的 key 值添加 getter 
 function createComputedGetter(key) {
   return function computedGetter() {
     const watcher = this._computedWatchers && this._computedWatchers[key]

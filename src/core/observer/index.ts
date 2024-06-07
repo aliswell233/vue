@@ -241,9 +241,12 @@ export function set(
     __DEV__ && warn(`Set operation on key "${key}" failed: target is readonly.`)
     return
   }
+  // __ob__ 是在 Observer 的构造函数执行的时候初始化的，表示 Observer 的一个实例，如果它不存在，则说明 target 不是一个响应式的对象，则直接赋值并返回。
   const ob = (target as any).__ob__
+  // 如果 target 是数组且 key 是一个合法的下标
   if (isArray(target) && isValidArrayIndex(key)) {
     target.length = Math.max(target.length, key)
+    // splice 去添加进数组然后返回，这里的 splice 其实已经不仅仅是原生数组的 splice 了
     target.splice(key, 1, val)
     // when mocking for SSR, array methods are not hijacked
     if (ob && !ob.shallow && ob.mock) {
@@ -251,6 +254,7 @@ export function set(
     }
     return val
   }
+  // 接着又判断 key 已经存在于 target 中，则直接赋值返回，因为这样的变化是可以观测到了
   if (key in target && !(key in Object.prototype)) {
     target[key] = val
     return val
@@ -263,10 +267,12 @@ export function set(
       )
     return val
   }
+  // 如果它不存在，则说明 target 不是一个响应式的对象，则直接赋值并返回。
   if (!ob) {
     target[key] = val
     return val
   }
+  // 通过 defineReactive(ob.value, key, val) 把新添加的属性变成响应式对象
   defineReactive(ob.value, key, val, undefined, ob.shallow, ob.mock)
   if (__DEV__) {
     ob.dep.notify({
@@ -277,6 +283,8 @@ export function set(
       oldValue: undefined
     })
   } else {
+    // 手动的触发依赖通知，
+    // 在 getter 过程中判断了 childOb，并调用了 childOb.dep.depend() 收集了依赖，这就是为什么执行 Vue.set 的时候通过 ob.dep.notify() 能够通知到 watcher，从而让添加新的属性到对象也可以检测到变化
     ob.dep.notify()
   }
   return val

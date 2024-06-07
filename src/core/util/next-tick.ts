@@ -6,6 +6,7 @@ import { isIE, isIOS, isNative } from './env' // 环境检测相关函数
 
 export let isUsingMicroTask = false  // 标记是否使用微任务
 
+// 这里使用 callbacks 而不是直接在 nextTick 中执行回调函数的原因是保证在同一个 tick 内多次执行 nextTick，不会开启多个异步任务，而把这些异步任务都压成一个同步任务，在下一个 tick 执行完毕。
 const callbacks: Array<Function> = []  //  存储所有待执行的回调函数  
 let pending = false // 标记是否有待处理的回调 如果已经有timerFunc被推送到任务队列中去则不需要重复推送
 

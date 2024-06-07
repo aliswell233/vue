@@ -205,6 +205,7 @@ export default class Watcher implements DepTarget {
     } else if (this.sync) {
       this.run()
     } else {
+      // 一般组件数据更新的场景
       queueWatcher(this)
     }
   }

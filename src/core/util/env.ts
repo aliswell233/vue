@@ -1,4 +1,5 @@
 // can we use __proto__?
+// 检查一个对象是否支持 __proto__ 属性，可以帮助开发者编写兼容性更好的代码，因为并不是所有 JavaScript 环境都支持这个属性（例如，一些较旧的浏览器可能不支持）。
 export const hasProto = '__proto__' in {}
 
 // Browser environment sniffing
