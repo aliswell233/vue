@@ -19,7 +19,7 @@
       }
     </style>
     <!-- Delete ".min" for console warnings in development -->
-    <script src="../../../dist/vue.js"></script>
+    <script src="../../dist/vue.js"></script>
   </head>
   <body>
     <div id="demo">
@@ -42,6 +42,55 @@
         </li>
       </ul>
     </div>
-    <script src="app.js"></script>
+    <script>
+        new Vue({
+  el: '#demo',
+
+  data: {
+    branches: ['main', 'dev'],
+    currentBranch: 'main',
+    commits: null
+  },
+
+  created: function () {
+    this.fetchData()
+  },
+
+  props:{
+    tea:{
+      type: String,
+      default: ''
+    }
+  },
+
+  watch: {
+    currentBranch: 'fetchData'
+  },
+
+  filters: {
+    truncate: function (v) {
+      var newline = v.indexOf('\n')
+      return newline > 0 ? v.slice(0, newline) : v
+    },
+    formatDate: function (v) {
+      return v.replace(/T|Z/g, ' ')
+    }
+  },
+
+  methods: {
+    fetchData: function () {
+      var apiURL = 'https://api.github.com/repos/vuejs/vue/commits?per_page=3&sha='
+      var self = this
+      var xhr = new XMLHttpRequest()
+      xhr.open('GET', apiURL + self.currentBranch)
+      xhr.onload = function () {
+        self.commits = JSON.parse(xhr.responseText)
+        console.log(self.commits[0].html_url)
+      }
+      xhr.send()
+    }
+  }
+})
+    </script>
   </body>
 </html>

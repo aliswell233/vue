@@ -69,6 +69,7 @@ export default class Dep {
     }
   }
 
+  // 遍历所有的 subs，也就是 Watcher 的实例数组，然后调用每一个 watcher 的 update 方法
   notify(info?: DebuggerEventExtraInfo) {
     // stabilize the subscriber list first
     const subs = this.subs.filter(s => s) as DepTarget[]
@@ -92,6 +93,7 @@ export default class Dep {
   }
 }
 
+
 // The current target watcher being evaluated.
 // This is globally unique because only one watcher
 // can be evaluated at a time.
@@ -103,6 +105,7 @@ export function pushTarget(target?: DepTarget | null) {
   Dep.target = target
 }
 
+// 实际上就是把 Dep.target 恢复成上一个状态，因为当前 vm 的数据依赖收集已经完成，那么对应的渲染Dep.target 也需要改变
 export function popTarget() {
   targetStack.pop()
   Dep.target = targetStack[targetStack.length - 1]

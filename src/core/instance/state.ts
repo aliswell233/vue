@@ -52,6 +52,7 @@ export function proxy(target: Object, sourceKey: string, key: string) {
 }
 
 export function initState(vm: Component) {
+  debugger
   const opts = vm.$options
   /*初始化props*/
   if (opts.props) initProps(vm, opts.props)
