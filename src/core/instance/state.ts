@@ -239,7 +239,7 @@ function initComputed(vm: Component, computed: Object) {
     // component prototype. We only need to define computed properties defined
     // at instantiation here.
     // 如果 key 不是 vm 的属性，则调用 defineComputed(vm, key, userDef)
-    if (!(key in vm)) {
+    if (!(key in vm)) { // if避免计算属性与已有的实例属性或方法发生冲突
       defineComputed(vm, key, userDef)
     } else if (__DEV__) {
       if (key in vm.$data) {
@@ -284,10 +284,11 @@ export function defineComputed(
       )
     }
   }
+  // 利用 Object.defineProperty 给计算属性对应的 key 值添加 getter 
   Object.defineProperty(target, key, sharedPropertyDefinition)
 }
 
-// 利用 Object.defineProperty 给计算属性对应的 key 值添加 getter 
+
 function createComputedGetter(key) {
   return function computedGetter() {
     const watcher = this._computedWatchers && this._computedWatchers[key]
@@ -304,6 +305,7 @@ function createComputedGetter(key) {
             key
           })
         }
+        // 调用 watcher.depend() 是为了确保所有依赖的 Dep 实例都将当前的渲染 Watcher 添加为订阅者
         watcher.depend()
       }
       return watcher.value

@@ -82,8 +82,11 @@ export function createASTElement(
 
 /**
  * Convert HTML string to AST.
+ * 编译过程首先就是对模板做解析，生成 AST，它是一种抽象语法树，是对源代码的抽象语法结构的树状表现形式。在很多编译技术中，如 babel 编译 ES6 的代码都会先生成 AST。
+这个过程是比较复杂的，它会用到大量正则表达式对字符串解析，如果对正则不是很了解，建议先去补习正则表达式的知识
  */
 export function parse(template: string, options: CompilerOptions): ASTElement {
+  /** getFnsAndConfigFromOptions(options)  从 options 中获取方法和配置 */ 
   warn = options.warn || baseWarn
 
   platformIsPreTag = options.isPreTag || no
@@ -211,7 +214,8 @@ export function parse(template: string, options: CompilerOptions): ASTElement {
       )
     }
   }
-
+  
+  /**  解析 HTML 模板 */
   parseHTML(template, {
     warn,
     expectHTML: options.expectHTML,

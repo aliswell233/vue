@@ -202,7 +202,8 @@ export default class Watcher implements DepTarget {
     /* istanbul ignore else */
     if (this.lazy) {
       this.dirty = true
-    } else if (this.sync) {
+    } else if (this.sync) { 
+      // 只有当我们需要 watch 的值的变化 到执行 watcher 的回调函数 是一个同步过程的时候才会去设置该属性为 true。
       this.run()
     } else {
       // 一般组件数据更新的场景
