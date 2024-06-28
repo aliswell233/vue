@@ -40,6 +40,7 @@ export function createElement(
   if (isTrue(alwaysNormalize)) {
     normalizationType = ALWAYS_NORMALIZE
   }
+  /** important */
   return _createElement(context, tag, data, children, normalizationType)
 }
 
@@ -82,9 +83,12 @@ export function _createElement(
     data.scopedSlots = { default: children[0] }
     children.length = 0
   }
+  /** important */
   if (normalizationType === ALWAYS_NORMALIZE) {
+    // 一个场景是 render 函数是用户手写的 另一个场景是当编译 slot、v-for 的时候会产生嵌套数组的情况，
     children = normalizeChildren(children)
   } else if (normalizationType === SIMPLE_NORMALIZE) {
+    // render 函数是编译生成的
     children = simpleNormalizeChildren(children)
   }
   let vnode, ns

@@ -99,16 +99,18 @@ const componentVNodeHooks = {
 const hooksToMerge = Object.keys(componentVNodeHooks)
 
 export function createComponent(
-  Ctor: typeof Component | Function | ComponentOptions | void,
-  data: VNodeData | undefined,
-  context: Component,
-  children?: Array<VNode>,
+  Ctor: typeof Component | Function | ComponentOptions | void,  //Ctor 为 ChildComponent 构造函数。
+  data: VNodeData | undefined, // 传递给组件的所有数据和属性 { props: { message: 'Hello from Parent Component' } }
+  context: Component, // 上下文的 Vue 实例，即父组件的实例 即ParentComponent 的实例
+  children?: Array<VNode>, // 
   tag?: string
 ): VNode | Array<VNode> | void {
+  // ChildComponent
   if (isUndef(Ctor)) {
     return
   }
 
+  // baseCtor 是 Vue 构造函数。
   const baseCtor = context.$options._base
 
   // plain options object: turn it into a constructor
